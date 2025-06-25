@@ -9,7 +9,6 @@ A distributed, fault-tolerant key-value storage system implemented in Python wit
 - **Distributed Architecture**: Multi-node setup with consistent hashing for data distribution
 - **Replication**: Configurable replication factor (default: 2) for high availability
 - **Fault Tolerance**: Automatic failover when nodes become unavailable
-- **Multi-threading**: Concurrent client connection handling
 
 ### Supported Operations
 - `PUT key value` - Store a key-value pair
@@ -24,7 +23,6 @@ A distributed, fault-tolerant key-value storage system implemented in Python wit
    - TCP socket based server
    - Write ahead logging to `store.log`
    - Automatic log replay on startup
-   - Multi-threaded client handling
 
 2. **Distributed Client** (`client_rep.py`)
    - Consistent hashing for node selection
