@@ -1,4 +1,3 @@
-# client.py (with replication)
 import socket
 import hashlib
 
@@ -16,7 +15,7 @@ def consistent_hash(key, nodes):
     return idx
 
 def get_replica_nodes(key, nodes, replication_factor):
-    """Returns a list of nodes for this key (primary + replicas)."""
+    """Returns a list of nodes for this key (primary+replicas)."""
     idx = consistent_hash(key, nodes)
     replica_nodes = []
     for i in range(replication_factor):
