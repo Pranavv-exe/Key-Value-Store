@@ -5,11 +5,11 @@ A distributed, fault-tolerant key-value storage system implemented in Python wit
 ## Features
 
 ### Core Functionality
-- **Persistent Storage**: Write ahead logging ensures data durability across server restarts[1]
-- **Distributed Architecture**: Multi-node setup with consistent hashing for data distribution[2]
-- **Replication**: Configurable replication factor (default: 2) for high availability[2]
-- **Fault Tolerance**: Automatic failover when nodes become unavailable[2]
-- **Multi-threading**: Concurrent client connection handling[1]
+- **Persistent Storage**: Write ahead logging ensures data durability across server restarts
+- **Distributed Architecture**: Multi-node setup with consistent hashing for data distribution
+- **Replication**: Configurable replication factor (default: 2) for high availability
+- **Fault Tolerance**: Automatic failover when nodes become unavailable
+- **Multi-threading**: Concurrent client connection handling
 
 ### Supported Operations
 - `PUT key value` - Store a key-value pair
@@ -20,19 +20,19 @@ A distributed, fault-tolerant key-value storage system implemented in Python wit
 
 ### Components
 
-1. **Node Server** (`node_persist.py`)[1]
+1. **Node Server** (`node_persist.py`)
    - TCP socket based server
    - Write ahead logging to `store.log`
    - Automatic log replay on startup
    - Multi-threaded client handling
 
-2. **Distributed Client** (`client_rep.py`)[2]
+2. **Distributed Client** (`client_rep.py`)
    - Consistent hashing for node selection
    - Replication management
    - Failover mechanism
    - Interactive command-line interface
 
-3. **Test Suite** (`test_key_value.py`)[3]
+3. **Test Suite** (`test_key_value.py`)
    - Automated cluster setup
    - Fault tolerance testing
    - Node failure simulation
@@ -86,13 +86,13 @@ python test_key_value.py
 ## Configuration
 
 ### Default Settings
-- **Ports**: 5000, 5001, 5002[2]
-- **Replication Factor**: 2[2]
-- **Log File**: `store.log`[1]
-- **Hash Algorithm**: SHA-1 for consistent hashing[2]
+- **Ports**: 5000, 5001, 5002
+- **Replication Factor**: 2
+- **Log File**: `store.log`
+- **Hash Algorithm**: SHA-1 for consistent hashing
 
 ### Customization
-Modify these variables in `client_rep.py` to adjust the cluster configuration[2]:
+Modify these variables in `client_rep.py` to adjust the cluster configuration:
 ```python
 NODES = [
     ('localhost', 5000),
@@ -111,7 +111,7 @@ The system uses write ahead logging where all operations are logged to `store.lo
 Keys are distributed across nodes using SHA-1 hashing, ensuring even distribution and allowing for easy scaling[2].
 
 ### Replication Strategy
-Each key is replicated to multiple nodes based on the replication factor. The client automatically selects replica nodes using consistent hashing[2].
+Each key is replicated to multiple nodes based on the replication factor. The client automatically selects replica nodes using consistent hashing.
 
 ### Fault Tolerance
 When a node fails, the client automatically tries replica nodes until it finds an available one, ensuring high availability[2].
