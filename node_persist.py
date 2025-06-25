@@ -32,7 +32,6 @@ data_store = replay_log()
 
 def handle_client(conn, addr):
     """
-    Handles a single client connection.
     Accepts commands: PUT key value, GET key, DELETE key
     """
     with conn:
@@ -49,9 +48,6 @@ def handle_client(conn, addr):
                 break
 
 def process_command(command):
-    """
-    Parses and executes a command string.
-    """
     parts = command.split()
     if not parts:
         return "ERROR Empty command"
