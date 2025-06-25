@@ -1,98 +1,145 @@
 # Distributed Key-Value Store
 
-## Overview
-
-This project implements a **distributed key-value store** in Python, designed to demonstrate core distributed systems concepts such as partitioning, replication, and fault tolerance. The system supports multiple storage nodes running on different ports, uses consistent hashing for data distribution, and implements replication for high availability and durability. All networking is handled via a custom TCP protocol for efficiency and learning value.
-
----
+A distributed, fault-tolerant key-value storage system implemented in Python with replication, persistence, and automatic failover capabilities.
 
 ## Features
 
-- **Consistent Hashing:** Evenly distributes keys across nodes and allows seamless scaling.
-- **Replication:** Each key is stored on multiple nodes (configurable replication factor) for fault tolerance.
-- **Custom TCP Protocol:** Lightweight, non-HTTP communication between client and nodes.
-- **Simple CLI Client:** Routes commands to the correct nodes using consistent hashing.
-- **Easy Local Deployment:** All nodes and client can be run on a single laptop (macOS, Linux, or Windows).
+### Core Functionality
+- **Persistent Storage**: Write-ahead logging ensures data durability across server restarts[1]
+- **Distributed Architecture**: Multi-node setup with consistent hashing for data distribution[2]
+- **Replication**: Configurable replication factor (default: 2) for high availability[2]
+- **Fault Tolerance**: Automatic failover when nodes become unavailable[2]
+- **Multi-threading**: Concurrent client connection handling[1]
 
----
+### Supported Operations
+- `PUT key value` - Store a key-value pair
+- `GET key` - Retrieve value for a given key
+- `DELETE key` - Remove a key-value pair
 
 ## Architecture
 
-```
-+---------+           +---------------------+
-|  Client | <-------> |  Node 1 (Port 5000) |
-|         | <-------> |  Node 2 (Port 5001) |
-|         | <-------> |  Node 3 (Port 5002) |
-+---------+           +---------------------+
-```
+### Components
 
-- **Client:** Accepts user commands, uses consistent hashing to pick nodes, and sends commands over TCP.
-- **Nodes:** Each node is a separate process, stores a subset of the keyspace, and handles replication.
+1. **Node Server** (`node_persist.py`)[1]
+   - TCP socket-based server
+   - Write-ahead logging to `store.log`
+   - Automatic log replay on startup
+   - Multi-threaded client handling
 
----
+2. **Distributed Client** (`client_rep.py`)[2]
+   - Consistent hashing for node selection
+   - Replication management
+   - Failover mechanism
+   - Interactive command-line interface
 
-## How It Works
+3. **Test Suite** (`test_key_value.py`)[3]
+   - Automated cluster setup
+   - Fault tolerance testing
+   - Node failure simulation
 
-- **PUT/DELETE:** The client sends the command to both the primary and replica node(s) for the key.
-- **GET:** The client queries the primary node for the key.
-- **Replication:** If a primary node fails, data can still be retrieved from the replica.
+## Quick Start
 
----
+### Prerequisites
+- Python 3.x
+- No external dependencies required
 
-## Getting Started
+### Setup and Run
 
-### **1. Clone the Repository**
+1. **Start the node cluster**:
+   ```bash
+   # Terminal 1
+   python node_persist.py 5000
+   
+   # Terminal 2
+   python node_persist.py 5001
+   
+   # Terminal 3
+   python node_persist.py 5002
+   ```
+
+2. **Run the client**:
+   ```bash
+   python client_rep.py
+   ```
+
+3. **Use the interactive shell**:
+   ```
+   > PUT mykey myvalue
+   [Node 5000] OK
+   [Node 5001] OK
+   
+   > GET mykey
+   [Node 5000] VALUE myvalue
+   
+   > DELETE mykey
+   [Node 5000] OK
+   [Node 5001] OK
+   ```
+
+### Running Tests
+
+Execute the automated test suite:
 ```bash
-git clone <your-repo-url>
-cd distributed_kv_store
+python test_key_value.py
 ```
 
-### **2. Start Node Servers**
-Open three terminals and run:
-```bash
-python node.py 5000
-python node.py 5001
-python node.py 5002
+## Configuration
+
+### Default Settings
+- **Ports**: 5000, 5001, 5002[2]
+- **Replication Factor**: 2[2]
+- **Log File**: `store.log`[1]
+- **Hash Algorithm**: SHA-1 for consistent hashing[2]
+
+### Customization
+Modify these variables in `client_rep.py` to adjust the cluster configuration[2]:
+```python
+NODES = [
+    ('localhost', 5000),
+    ('localhost', 5001),
+    ('localhost', 5002)
+]
+REPLICATION_FACTOR = 2
 ```
 
-### **3. Start the Client**
-Open a fourth terminal:
-```bash
-python client.py
+## Technical Details
+
+### Persistence Mechanism
+The system uses write-ahead logging where all operations are logged to `store.log` before being applied to the in-memory store[1]. On startup, nodes replay the log to restore their state.
+
+### Consistent Hashing
+Keys are distributed across nodes using SHA-1 hashing, ensuring even distribution and allowing for easy scaling[2].
+
+### Replication Strategy
+Each key is replicated to multiple nodes based on the replication factor. The client automatically selects replica nodes using consistent hashing[2].
+
+### Fault Tolerance
+When a node fails, the client automatically tries replica nodes until it finds an available one, ensuring high availability[2].
+
+## File Structure
+
+```
+project/
+├── node_persist.py      # Main node server implementation
+├── client_rep.py        # Distributed client with replication
+├── test_key_value.py    # Automated test suite
+└── store.log           # Persistent storage log file
 ```
 
-### **4. Example Commands**
-```
-PUT foo bar
-GET foo
-DELETE foo
-GET foo
-EXIT
-```
+## Error Handling
 
----
+The system handles various error conditions:
+- Node failures during operations
+- Network timeouts
+- Invalid commands
+- Key not found scenarios
 
-## Design Decisions
+## Future Enhancements
 
-- **Consistent Hashing:** Chosen for its scalability and even load distribution. Adding/removing nodes requires minimal data movement.
-- **Replication:** Configurable for fault tolerance. The client handles replication logic for simplicity.
-- **Custom Protocol:** Using TCP sockets keeps dependencies minimal and helps understand networking fundamentals.
-- **Extensibility:** The system is designed to be easily extended (e.g., add persistence, web dashboard, or advanced failure handling).
-
----
-
-## Possible Extensions
-
-- **Node Failure Handling:** Detect and recover from node crashes automatically.
-- **Persistence:** Store data on disk for durability across restarts.
-- **Web Dashboard:** Visualize node status and key distribution.
-- **Dynamic Membership:** Add or remove nodes without downtime.
-- **Stronger Consistency:** Implement quorum-based reads/writes.
-
----
-
-## Testing & Verification
-
-- **Replication:** After a `PUT`, data is present on two nodes. If the primary node is stopped, the replica still serves the data.
-- **Consistency:** After a `DELETE`, `GET` returns `NOT_FOUND` from all replicas.
-- **Logs:** Each node logs incoming commands for transparency.
+Potential improvements for this key-value store:
+- Data partitioning across nodes
+- Leader election for write coordination
+- REST API interface
+- Monitoring and metrics
+- Compression for log files
+- Configurable consistency levels
