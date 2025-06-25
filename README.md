@@ -5,7 +5,7 @@ A distributed, fault-tolerant key-value storage system implemented in Python wit
 ## Features
 
 ### Core Functionality
-- **Persistent Storage**: Write-ahead logging ensures data durability across server restarts[1]
+- **Persistent Storage**: Write ahead logging ensures data durability across server restarts[1]
 - **Distributed Architecture**: Multi-node setup with consistent hashing for data distribution[2]
 - **Replication**: Configurable replication factor (default: 2) for high availability[2]
 - **Fault Tolerance**: Automatic failover when nodes become unavailable[2]
@@ -21,8 +21,8 @@ A distributed, fault-tolerant key-value storage system implemented in Python wit
 ### Components
 
 1. **Node Server** (`node_persist.py`)[1]
-   - TCP socket-based server
-   - Write-ahead logging to `store.log`
+   - TCP socket based server
+   - Write ahead logging to `store.log`
    - Automatic log replay on startup
    - Multi-threaded client handling
 
@@ -105,7 +105,7 @@ REPLICATION_FACTOR = 2
 ## Technical Details
 
 ### Persistence Mechanism
-The system uses write-ahead logging where all operations are logged to `store.log` before being applied to the in-memory store[1]. On startup, nodes replay the log to restore their state.
+The system uses write ahead logging where all operations are logged to `store.log` before being applied to the in memory store[1]. On startup, nodes replay the log to restore their state.
 
 ### Consistent Hashing
 Keys are distributed across nodes using SHA-1 hashing, ensuring even distribution and allowing for easy scaling[2].
