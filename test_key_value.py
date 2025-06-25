@@ -8,13 +8,13 @@ def stop_node(proc):
     proc.terminate()
     proc.wait()
 
-# Start nodes
+# Starts nodes
 node1 = start_node(5000)
 node2 = start_node(5001)
 node3 = start_node(5002)
-time.sleep(1)  # Give nodes time to start
+time.sleep(1)  # Gives nodes time to start
 
-# Run tests using your client functions
+# Run tests
 assert put('foo', 'bar') == 'OK'
 assert get('foo') == 'VALUE bar'
 
